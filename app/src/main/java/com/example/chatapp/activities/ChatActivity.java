@@ -22,6 +22,7 @@ import com.example.chatapp.models.User;
 import com.example.chatapp.network.ApiClient;
 import com.example.chatapp.network.ApiService;
 import com.example.chatapp.utilities.Constants;
+import com.example.chatapp.utilities.GroomingDetector;
 import com.example.chatapp.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentChange;
@@ -94,16 +95,72 @@ public class ChatActivity extends BaseActivity {
 
     }
 
-    private void sendMessage(){
+    private void sendMessage() {
+        String messageText = binding.inputMessage.getText().toString();
+        GroomingDetector.DetectionResult result = GroomingDetector.analyze(messageText);
+
+        if (result.riskLevel == GroomingDetector.RiskLevel.HIGH) {
+            showHighRiskAlert(result);
+        } else if (result.riskLevel == GroomingDetector.RiskLevel.MEDIUM) {
+            showMediumRiskWarning(result);
+        } else {
+            performSendMessage(messageText, false, 0, null);
+        }
+    }
+
+    private void showMediumRiskWarning(GroomingDetector.DetectionResult result) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Safety Warning")
+                .setMessage("This message contains language that could be associated with grooming behavior. Are you sure you want to send it?\n\nDetected: " + result.reason)
+                .setPositiveButton("Send Anyway", (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name()))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showHighRiskAlert(GroomingDetector.DetectionResult result) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Security Alert")
+                .setMessage("This message has been blocked because it contains high-risk grooming patterns. This incident will be logged for your safety.")
+                .setPositiveButton("Report & Get Help", (dialog, which) -> {
+                    logHighRiskIncident(result);
+                    android.content.Intent intent = new android.content.Intent(getApplicationContext(), ReportActivity.class);
+                    intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
+                    intent.putExtra(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+                    startActivity(intent);
+                })
+                .setNegativeButton("Close", (dialog, which) -> logHighRiskIncident(result))
+                .show();
+    }
+
+    private void logHighRiskIncident(GroomingDetector.DetectionResult result) {
+        HashMap<String, Object> incident = new HashMap<>();
+        incident.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+        incident.put(Constants.KEY_RECEIVER_ID, receiverUser.id);
+        incident.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+        incident.put(Constants.KEY_TIMESTAMP, new Date());
+        incident.put(Constants.KEY_IS_FLAGGED, true);
+        incident.put(Constants.KEY_RISK_SCORE, result.score);
+        incident.put(Constants.KEY_RISK_LEVEL, result.riskLevel.name());
+        database.collection("flagged_incidents").add(incident);
+        binding.inputMessage.setText(null);
+    }
+
+    private void performSendMessage(String messageText, boolean isFlagged, int riskScore, String riskLevel) {
         HashMap<String, Object> message = new HashMap<>();
         message.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
         message.put(Constants.KEY_RECEIVER_ID, receiverUser.id);
-        message.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+        message.put(Constants.KEY_MESSAGE, messageText);
         message.put(Constants.KEY_TIMESTAMP, new Date());
+        message.put(Constants.KEY_IS_FLAGGED, isFlagged);
+        if (isFlagged) {
+            message.put(Constants.KEY_RISK_SCORE, riskScore);
+            message.put(Constants.KEY_RISK_LEVEL, riskLevel);
+        }
+
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
-        if(conversionId != null){
-            updateConversion(binding.inputMessage.getText().toString());
-        }else{
+        if (conversionId != null) {
+            updateConversion(messageText);
+        } else {
             HashMap<String, Object> conversion = new HashMap<>();
             conversion.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
             conversion.put(Constants.KEY_SENDER_NAME, preferenceManager.getString(Constants.KEY_NAME));
@@ -111,12 +168,12 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Constants.KEY_RECEIVER_ID, receiverUser.id);
             conversion.put(Constants.KEY_RECEIVER_NAME, receiverUser.name);
             conversion.put(Constants.KEY_RECEIVER_IMAGE, receiverUser.image);
-            conversion.put(Constants.KEY_LAST_MESSAGE, binding.inputMessage.getText().toString());
+            conversion.put(Constants.KEY_LAST_MESSAGE, messageText);
             conversion.put(Constants.KEY_TIMESTAMP, new Date());
             addConversion(conversion);
         }
-        if(!isReceiverAvailable){
-            try{
+        if (!isReceiverAvailable) {
+            try {
                 JSONArray tokens = new JSONArray();
                 tokens.put(receiverUser.token);
 
@@ -124,7 +181,7 @@ public class ChatActivity extends BaseActivity {
                 data.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
                 data.put(Constants.KEY_NAME, preferenceManager.getString(Constants.KEY_NAME));
                 data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getString(Constants.KEY_FCM_TOKEN));
-                data.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+                data.put(Constants.KEY_MESSAGE, messageText);
 
                 JSONObject notificationMessage = new JSONObject();
                 notificationMessage.put(Constants.REMOTE_MSG_DATA, data);
@@ -134,7 +191,7 @@ public class ChatActivity extends BaseActivity {
                 body.put(Constants.REMOTE_MSG_MESSAGE, notificationMessage);
 
                 sendNotification(body.toString());
-            }catch (Exception exception){
+            } catch (Exception exception) {
                 showToast(exception.getMessage());
             }
         }
