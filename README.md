@@ -1,10 +1,23 @@
 ## Anti-Grooming Detection ChatApp
 
-All NLP processing happens on-device, triggered only by informed user consent, making it both technically sound and legally compliant — a stronger design than server-side AI monitoring.
+This project implements a user-consent, on-device NLP pipeline for detecting grooming behavior in chat conversations. Unlike server-side monitoring, our design ensures that analysis only runs when the user explicitly requests it — via a “Scan Conversation” button. This approach prioritizes privacy, transparency, and legal compliance, while still delivering robust detection capabilities.
 
-## Concept
+## Features
+1. User-Controlled Scanning
 
-Install and run `app-release.apk` requires Android 5.0 or higher
+2. On-Device NLP Processing
+
+3. Grooming Behavior Detection
+
+4. Detects manipulative linguistic cues (e.g., secrecy requests, flattery, boundary testing).
+
+5. Tracks conversation progression from friendly → personal → sexual topics.
+
+6. Provides risk scoring (Low, Medium, High) with alerts.
+
+7. Reinforces ethical AI design principles: privacy, consent, safety.
+
+## Diagram
 
 ![concept1](diagram1.png)
 
