@@ -1,6 +1,6 @@
 ## Anti-Grooming Detection ChatApp
 
-This project implements a user-consent, on-device NLP pipeline for detecting grooming behavior in chat conversations. Unlike server-side monitoring, our design ensures that analysis only runs when the user explicitly requests via a “Scan Conversation” button. This approach prioritizes privacy, transparency, and legal compliance, while still delivering robust detection capabilities.
+This project extends the original ChatApp by adding a user-controlled scanning feature. NLP-based grooming detection runs only when the user presses the “Scan Conversation” button, ensuring that analysis is consent-driven, transparent, and privacy-preserving. Unlike server-side monitoring, all NLP processing happens locally on the device, making the system both technically sound and legally compliant.
 
 ## Features
 1. User-Controlled Scanning
