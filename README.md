@@ -64,8 +64,8 @@ cd Anti-Gromming-Detection-ChatApp
 - Download `google-services.json` and place it in `app/`
 - Navigate to Project Settings.
 - Select the Service Account tab.
-- Click on Generate New Private Key to download the service_account.json file.
-- Place service_account.json it inside your app’s app/src/main/assets directory in Android Studio.
+- Click on Generate New Private Key to download the `service_account.json` file.
+- Place `service_account.json` it inside your app’s `app/src/main/assets` directory in Android Studio.
 
 3. Add your Gemini API key
 - Open `app/src/main/java/com/example/chatapp/utilities/Constants.java` and replace:
