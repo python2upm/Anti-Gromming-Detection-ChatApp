@@ -2,6 +2,14 @@
 
 A grooming-aware Android chat application built for female online safety. SafeChat embeds real-time AI-assisted grooming risk detection directly within a native messaging environment, protecting users at the point where risk actually occurs: inside the conversation itself.
 
+## Demo
+
+[![Download](https://img.shields.io/badge/Download-v1.1.0-blue?style=flat-square)](https://github.com/zilitye/Anti-Gromming-Detection-ChatApp/releases/download/v1.0.0/app-release.apk)
+
+Install and run `app-release.apk`. Requires Android 7.0 or higher
+
+![alt text](image-1.png)
+
 ## Features
 
 1. Real-Time Chat with Grooming Detection
@@ -74,7 +82,7 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
 
 4. Build and run
-- Open the project in Android Studio. Require android 7.0 or above
+- Open the project in Android Studio.
 
 ## References
 
