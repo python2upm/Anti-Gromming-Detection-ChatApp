@@ -25,13 +25,9 @@ A dedicated screen powered by the **Google Gemini API**. Users can ask the AI as
 
 A per-contact risk dashboard aggregates token scores across an entire conversation history, giving users a longitudinal view of whether a contact's communication pattern reflects escalating grooming behaviour over time.
 
-4. Report Flow
-
-Users can flag a conversation directly from the chat screen. The conversation evidence is forwarded to the Gemini API for AI-assisted analysis, and a summary is presented to the user before formal submission.
+4. Users can flag a conversation directly from the chat screen. The conversation evidence is forwarded to the Gemini API for AI-assisted analysis, and a summary is presented to the user before formal submission.
 
 5. Authentication
-
-Sign up and sign in via email and password, with user profiles and profile images stored in Firebase Firestore.
 
 ## Tech Stack
 
@@ -49,7 +45,6 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 ## Project Structure
 
-
 <p>
     <img width="350" height="400" src="diagram1.png" hspace="10" >
     <img width="350" height="400" src="diagram2.png" hspace="10" >
@@ -64,7 +59,7 @@ cd Anti-Gromming-Detection-ChatApp
 ```
 
 2. Connect Firebase
-- Create a project at [Firebase Console](https://console.firebase.google.com/)
+- Create a project at Firebase Console
 - Enable **Firestore Database** and **Cloud Messaging**
 - Download `google-services.json` and place it in `app/`
 - Navigate to Project Settings.
@@ -73,26 +68,13 @@ cd Anti-Gromming-Detection-ChatApp
 - Place service_account.json it inside your app’s app/src/main/assets directory in Android Studio.
 
 3. Add your Gemini API key
-
-Open `app/src/main/java/com/example/chatapp/utilities/Constants.java` and replace:
+- Open `app/src/main/java/com/example/chatapp/utilities/Constants.java` and replace:
 ```java
 public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
-Get a key at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 4. Build and run
-
-Open the project in Android Studio and click **Run**, or build an APK via:
-```
-Build → Build Bundle(s) / APK(s) → Build APK(s)
-```
-
-## Known Limitations
-
-- Keyword-based detection can be circumvented by deliberate misspellings or coded language
-- The system does not perform contextual disambiguation — legitimate uses of flagged terms may trigger warnings
-- The Gemini Safety Hub operates on user-initiated queries only, not passive monitoring
-- Currently English-language only; multilingual support is a planned future enhancement
+- Open the project in Android Studio
 
 ## Research References
 
