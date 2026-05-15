@@ -54,39 +54,8 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 ## Project Structure
 
-```
-app/src/main/java/com/example/chatapp/
-├── activities/
-│   ├── SignInActivity.java       # Entry point / login
-│   ├── SignUpActivity.java       # Registration
-│   ├── MainActivity.java         # Recent conversations list
-│   ├── ChatActivity.java         # Chat screen + real-time detection
-│   ├── SafetyHubActivity.java    # Gemini AI assistant
-│   ├── RiskDashboardActivity.java# Per-contact risk scores
-│   └── ReportActivity.java       # Report submission flow
-├── adapters/
-│   ├── ChatAdapter.java
-│   ├── RecentConversationsAdapter.java
-│   ├── SafetyHubAdapter.java
-│   └── UsersAdapter.java
-├── models/
-│   ├── ChatMessage.java
-│   ├── SafetyHubMessage.java
-│   └── User.java
-├── utilities/
-│   ├── GroomingDetector.java     # Keyword scoring engine
-│   ├── Constants.java            # API keys, Firestore keys
-│   ├── PreferenceManager.java
-│   ├── AccessTokenManager.java
-│   └── MarkdownUtils.java
-├── firebase/
-│   └── MessagingService.java     # FCM push notifications
-└── network/
-    ├── ApiClient.java
-    └── ApiService.java
-```
-
----
+![alt text](diagram1.png)
+![alt text](diagram2.png)
 
 ## Setup & Installation
 
