@@ -51,8 +51,8 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 
 <p>
-    <img width="100" height="100" src="diagram1.png" hspace="10" >
-    <img width="100" height="100" src="diagram2.png" hspace="10" >
+    <img width="300" height="300" src="diagram1.png" hspace="10" >
+    <img width="300" height="300" src="diagram2.png" hspace="10" >
 </p>
 
 ## Setup & Installation
