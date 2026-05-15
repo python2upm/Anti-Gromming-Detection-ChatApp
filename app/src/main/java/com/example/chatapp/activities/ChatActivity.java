@@ -104,7 +104,7 @@ public class ChatActivity extends BaseActivity {
         } else if (result.riskLevel == GroomingDetector.RiskLevel.MEDIUM) {
             showMediumRiskWarning(result);
         } else {
-            performSendMessage(messageText, false, 0, null);
+            performSendMessage(messageText, false, 0, null, null);
         }
     }
 
@@ -112,7 +112,7 @@ public class ChatActivity extends BaseActivity {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle(R.string.safety_warning)
                 .setMessage(getString(R.string.grooming_warning_message, result.reason))
-                .setPositiveButton(R.string.send_anyway, (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name()))
+                .setPositiveButton(R.string.send_anyway, (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name(), result.reason))
                 .setNegativeButton(R.string.cancel, null)
                 .show();
     }
@@ -145,7 +145,7 @@ public class ChatActivity extends BaseActivity {
         binding.inputMessage.setText(null);
     }
 
-    private void performSendMessage(String messageText, boolean isFlagged, int riskScore, String riskLevel) {
+    private void performSendMessage(String messageText, boolean isFlagged, int riskScore, String riskLevel, String flaggedReason) {
         HashMap<String, Object> message = new HashMap<>();
         message.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
         message.put(Constants.KEY_RECEIVER_ID, receiverUser.id);
@@ -155,6 +155,7 @@ public class ChatActivity extends BaseActivity {
         if (isFlagged) {
             message.put(Constants.KEY_RISK_SCORE, riskScore);
             message.put(Constants.KEY_RISK_LEVEL, riskLevel);
+            message.put(Constants.KEY_FLAGGED_REASON, flaggedReason);
         }
 
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
@@ -312,6 +313,9 @@ public class ChatActivity extends BaseActivity {
                     chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
                     chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
+                    Boolean isFlaggedObj = documentChange.getDocument().getBoolean(Constants.KEY_IS_FLAGGED);
+                    chatMessage.isFlagged = isFlaggedObj != null && isFlaggedObj;
+                    chatMessage.flaggedReason = documentChange.getDocument().getString(Constants.KEY_FLAGGED_REASON);
                     chatMessages.add(chatMessage);
                 }
 

@@ -87,6 +87,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         void setData(ChatMessage chatMessage){
             binding.textMessage.setText(chatMessage.message);
             binding.textDateTime.setText(chatMessage.dateTime);
+            if (chatMessage.isFlagged) {
+                binding.imageWarning.setVisibility(android.view.View.VISIBLE);
+            } else {
+                binding.imageWarning.setVisibility(android.view.View.GONE);
+            }
         }
     }
 
@@ -102,6 +107,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             binding.textDateTime.setText(chatMessage.dateTime);
             if(receiverProfileImage != null) {
                 binding.imageProfile.setImageBitmap(receiverProfileImage);
+            }
+            if (chatMessage.isFlagged) {
+                binding.imageWarning.setVisibility(android.view.View.VISIBLE);
+            } else {
+                binding.imageWarning.setVisibility(android.view.View.GONE);
             }
         }
     }

@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.chatapp.R;
+import com.example.chatapp.adapters.SafetyHubAdapter;
 import com.example.chatapp.databinding.ActivitySafetyHubBinding;
+import com.example.chatapp.models.SafetyHubMessage;
 import com.example.chatapp.utilities.Constants;
 
 import org.json.JSONArray;
@@ -16,6 +19,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,46 +31,122 @@ public class SafetyHubActivity extends BaseActivity {
 
     private ActivitySafetyHubBinding binding;
     private final Executor executor = Executors.newSingleThreadExecutor();
+    private String conversationContext = "";
+    private List<SafetyHubMessage> safetyHubMessages;
+    private SafetyHubAdapter safetyHubAdapter;
+    private JSONArray chatHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySafetyHubBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        conversationContext = getIntent().getStringExtra("conversation");
+        if (conversationContext == null) conversationContext = "No context provided.";
+        init();
         setListeners();
+    }
+
+    private void init() {
+        safetyHubMessages = new ArrayList<>();
+        safetyHubAdapter = new SafetyHubAdapter(safetyHubMessages);
+        binding.chatRecyclerView.setAdapter(safetyHubAdapter);
+        chatHistory = new JSONArray();
+
+        // Add welcome message
+        addMessage(getString(R.string.safety_hub_welcome), false);
+    }
+
+    private void addMessage(String text, boolean isUser) {
+        safetyHubMessages.add(new SafetyHubMessage(text, isUser, getReadableDateTime(new Date())));
+        safetyHubAdapter.notifyItemInserted(safetyHubMessages.size() - 1);
+        binding.chatRecyclerView.smoothScrollToPosition(safetyHubMessages.size() - 1);
+
+        try {
+            JSONObject content = new JSONObject();
+            content.put("role", isUser ? "user" : "model");
+            JSONArray parts = new JSONArray();
+            JSONObject part = new JSONObject();
+            part.put("text", text);
+            parts.put(part);
+            content.put("parts", parts);
+            chatHistory.put(content);
+        } catch (Exception ignored) {}
+    }
+
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.imageSend.setOnClickListener(v -> {
-            if (!binding.inputPrompt.getText().toString().trim().isEmpty()) {
-                callGeminiAPI(binding.inputPrompt.getText().toString());
+            String prompt = binding.inputPrompt.getText().toString().trim();
+            if (!prompt.isEmpty()) {
+                addMessage(prompt, true);
+                binding.inputPrompt.setText("");
+                callGeminiAPI("Q&A");
             }
         });
+
+        binding.buttonPolicy.setOnClickListener(v -> analyzePolicy());
+        binding.buttonReport.setOnClickListener(v -> draftReport());
+        binding.buttonResources.setOnClickListener(v -> recommendResources());
     }
 
-    private void callGeminiAPI(String prompt) {
+    private void analyzePolicy() {
+        addMessage("Policy Analysis Requested", true);
+        callGeminiAPI("Policy Analysis");
+    }
+
+    private void draftReport() {
+        addMessage("Report Assistant Requested", true);
+        callGeminiAPI("Report Assistant");
+    }
+
+    private void recommendResources() {
+        String resources = "### Recommended Resources & Hotlines\n\n" +
+                "- **Childhelp National Child Abuse Hotline**: 1-800-422-4453\n" +
+                "- **Cyber Civil Rights Initiative (CCRI)**: 1-844-878-2274\n" +
+                "- **National Suicide Prevention Lifeline**: 988\n" +
+                "- **RAINN National Sexual Assault Hotline**: 1-800-656-HOPE\n\n" +
+                "**Counseling Services:**\n" +
+                "- Look for licensed therapists specializing in trauma and child safety.\n" +
+                "- Consider online platforms like BetterHelp or local community health centers.";
+        addMessage(resources, false);
+    }
+
+    private void callGeminiAPI(String mode) {
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.imageSend.setEnabled(false);
         executor.execute(() -> {
             try {
-                // Gemini API Endpoint (Generative Language API)
-                URL url = new URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + Constants.GEMINI_API_KEY);
+                URL url = new URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("X-goog-api-key", Constants.GEMINI_API_KEY);
                 conn.setDoOutput(true);
 
-                // Construct Request JSON
-                JSONObject contents = new JSONObject();
-                JSONArray parts = new JSONArray();
-                JSONObject textPart = new JSONObject();
-                textPart.put("text", "You are a safety assistant for a chat app. Help the user with anti-grooming advice, policy analysis, or report writing. User: " + prompt);
-                parts.put(textPart);
-                contents.put("parts", parts);
-                
+                // Construct system instruction and combined history
                 JSONArray contentsArray = new JSONArray();
-                contentsArray.put(contents);
+                
+                // Add System/Context Instruction as the first message
+                JSONObject systemPrompt = new JSONObject();
+                systemPrompt.put("role", "user");
+                JSONArray systemParts = new JSONArray();
+                JSONObject systemText = new JSONObject();
+                systemText.put("text", "System: You are a safety assistant for a chat app focusing on anti-grooming. Mode: " + mode + 
+                        ". Current Conversation Context for Reference: " + conversationContext + 
+                        "\nRespond to the user's latest message based on this context and history.");
+                systemParts.put(systemText);
+                systemPrompt.put("parts", systemParts);
+                contentsArray.put(systemPrompt);
+
+                // Add conversation history
+                for (int i = 0; i < chatHistory.length(); i++) {
+                    contentsArray.put(chatHistory.get(i));
+                }
                 
                 JSONObject requestBody = new JSONObject();
                 requestBody.put("contents", contentsArray);
@@ -90,13 +174,18 @@ public class SafetyHubActivity extends BaseActivity {
                             .getString("text");
 
                     runOnUiThread(() -> {
-                        binding.textResponse.setText(resultText);
+                        addMessage(resultText, false);
                         binding.progressBar.setVisibility(View.GONE);
                         binding.imageSend.setEnabled(true);
-                        binding.inputPrompt.setText("");
                     });
                 } else {
-                    throw new Exception("API call failed with code: " + responseCode);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse.append(line.trim());
+                    }
+                    throw new Exception("API failed (" + responseCode + "): " + errorResponse.toString());
                 }
             } catch (Exception e) {
                 runOnUiThread(() -> {

@@ -43,9 +43,15 @@ public class RiskDashboardActivity extends BaseActivity {
         binding.textReceiverName.setText(getString(R.string.chat_with, receiverName));
     }
 
+    private String conversationContext = "";
+
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        binding.buttonSafetyHub.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), SafetyHubActivity.class)));
+        binding.buttonSafetyHub.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SafetyHubActivity.class);
+            intent.putExtra("conversation", conversationContext);
+            startActivity(intent);
+        });
         binding.buttonReport.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.putExtra(Constants.KEY_MESSAGE, "Dashboard requested report");
@@ -69,8 +75,11 @@ public class RiskDashboardActivity extends BaseActivity {
                         int flaggedCount = 0;
                         StringBuilder detectedWords = new StringBuilder();
 
+                        StringBuilder contextBuilder = new StringBuilder();
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String message = document.getString(Constants.KEY_MESSAGE);
+                            contextBuilder.append(message).append("\n");
                             GroomingDetector.DetectionResult result = GroomingDetector.analyze(message);
                             if (result.riskLevel != GroomingDetector.RiskLevel.SAFE) {
                                 totalScore += result.score;
@@ -79,6 +88,7 @@ public class RiskDashboardActivity extends BaseActivity {
                                 detectedWords.append(result.reason.replace("Suspicious patterns detected: ", "").replace("High risk patterns detected: ", ""));
                             }
                         }
+                        conversationContext = contextBuilder.toString();
                         updateUI(totalScore, flaggedCount, detectedWords.toString());
                     } else {
                         showToast("Failed to fetch messages for analysis.");
@@ -98,7 +108,7 @@ public class RiskDashboardActivity extends BaseActivity {
             binding.textSummary.setText("This conversation has multiple high-risk indicators (" + flaggedCount + " flagged messages). We strongly recommend ending this interaction.");
         } else if (normalizedScore >= 20) {
             binding.textRiskLevel.setText("MEDIUM RISK");
-            binding.textRiskLevel.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary));
+            binding.textRiskLevel.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.macos_traffic_yellow));
             binding.textSummary.setText("Some suspicious patterns were detected (" + flaggedCount + " messages). Please be cautious and avoid sharing private information.");
         } else {
             binding.textRiskLevel.setText("SAFE");
