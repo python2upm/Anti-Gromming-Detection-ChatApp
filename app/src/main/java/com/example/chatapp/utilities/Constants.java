@@ -31,7 +31,7 @@ public class Constants {
     public static final String KEY_IS_FLAGGED = "isFlagged";
     public static final String KEY_RISK_LEVEL = "riskLevel";
     public static final String KEY_FLAGGED_REASON = "flaggedReason";
-    public static final String GEMINI_API_KEY = "AIzaSyDMNrWL1tTEqrwOTouwNTM2gRy2YdTr_sc";
+    public static final String GEMINI_API_KEY = "AIzaSyA3wfO25k2Db5HVPXnmmjDIhPRGqejX-R8";
     public static final String REMOTE_MSG_AUTHORIZATION = "Authorization";
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";

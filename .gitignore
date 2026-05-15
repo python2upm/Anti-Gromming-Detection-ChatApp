@@ -15,3 +15,4 @@
 local.properties
 app/google-services.json
 app/src/main/assets/chatapp-334b8-firebase-adminsdk-fbsvc-029f2931af.json
+app/src/main/java/com/example/chatapp/utilities/Constants.java

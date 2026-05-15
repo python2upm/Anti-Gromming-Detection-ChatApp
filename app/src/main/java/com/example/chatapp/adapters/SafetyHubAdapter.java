@@ -6,9 +6,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapp.R;
 import com.example.chatapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chatapp.databinding.ItemContainerSentMessageBinding;
 import com.example.chatapp.models.SafetyHubMessage;
+import com.example.chatapp.utilities.MarkdownUtils;
 
 import java.util.List;
 
@@ -76,7 +78,7 @@ public class SafetyHubAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void setData(SafetyHubMessage safetyHubMessage) {
-            binding.textMessage.setText(safetyHubMessage.message);
+            binding.textMessage.setText(MarkdownUtils.formatMarkdown(binding.getRoot().getContext(), safetyHubMessage.message));
             binding.textDateTime.setText(safetyHubMessage.dateTime);
         }
     }
@@ -90,8 +92,9 @@ public class SafetyHubAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void setData(SafetyHubMessage safetyHubMessage) {
-            binding.textMessage.setText(safetyHubMessage.message);
+            binding.textMessage.setText(MarkdownUtils.formatMarkdown(binding.getRoot().getContext(), safetyHubMessage.message));
             binding.textDateTime.setText(safetyHubMessage.dateTime);
+            binding.imageProfile.setImageResource(R.drawable.ic_ai);
         }
     }
 }

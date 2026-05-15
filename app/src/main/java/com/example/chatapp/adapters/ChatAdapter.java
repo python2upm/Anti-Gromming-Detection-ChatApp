@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.chatapp.databinding.ItemContainerReceivedMessageBinding;
 import com.example.chatapp.databinding.ItemContainerSentMessageBinding;
 import com.example.chatapp.models.ChatMessage;
+import com.example.chatapp.utilities.MarkdownUtils;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             binding = itemContainerSentMessageBinding;
         }
         void setData(ChatMessage chatMessage){
-            binding.textMessage.setText(chatMessage.message);
+            binding.textMessage.setText(MarkdownUtils.formatMarkdown(binding.getRoot().getContext(), chatMessage.message));
             binding.textDateTime.setText(chatMessage.dateTime);
             if (chatMessage.isFlagged) {
                 binding.imageWarning.setVisibility(android.view.View.VISIBLE);
@@ -103,7 +104,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
 
         void setData(ChatMessage chatMessage, Bitmap receiverProfileImage){
-            binding.textMessage.setText(chatMessage.message);
+            binding.textMessage.setText(MarkdownUtils.formatMarkdown(binding.getRoot().getContext(), chatMessage.message));
             binding.textDateTime.setText(chatMessage.dateTime);
             if(receiverProfileImage != null) {
                 binding.imageProfile.setImageBitmap(receiverProfileImage);
