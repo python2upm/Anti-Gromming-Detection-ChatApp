@@ -76,7 +76,7 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 4. Build and run
 - Open the project in Android Studio
 
-## Research References
+## References
 
 1. Borj, P. R., Raja, K., & Bours, P. (2022). Online grooming detection: A comprehensive survey. *Knowledge-Based Systems*, 259, 110039.
 2. Nelatoori, K. B., & Kommanti, H. B. (2022). Attention-Based Bi-LSTM Network for Abusive Language Detection. *IETE Journal of Research*.
