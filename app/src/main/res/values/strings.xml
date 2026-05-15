@@ -13,4 +13,26 @@
     <string name="select_user">Select User</string>
     <string name="type_a_message">Type a message</string>
     <string name="online">Online</string>
+    <string name="risk_dashboard">Risk Dashboard</string>
+    <string name="risk_score">Risk Score</string>
+    <string name="safety_summary">Safety Summary</string>
+    <string name="open_safety_hub">Open Safety Hub</string>
+    <string name="report_incident">Report Incident</string>
+    <string name="chat_with">Chat with %1$s</string>
+    <string name="safety_report">Safety Report</string>
+    <string name="why_flagged">Why was this flagged?</string>
+    <string name="your_message">Your Message</string>
+    <string name="submit_report">Submit Official Report</string>
+    <string name="view_resources">View Safety Resources</string>
+    <string name="safety_hub">Safety Hub</string>
+    <string name="safety_hub_welcome">How can I help you today?\n\n- Awareness Chatbot\n- Policy Analyzer\n- Report Writing Assistant\n- Resource Recommender</string>
+    <string name="ask_anything">Ask anything...</string>
+    <string name="safety_warning">Safety Warning</string>
+    <string name="grooming_warning_message">This message contains language that could be associated with grooming behavior. Are you sure you want to send it?\n\nDetected: %1$s</string>
+    <string name="send_anyway">Send Anyway</string>
+    <string name="cancel">Cancel</string>
+    <string name="security_alert">Security Alert</string>
+    <string name="high_risk_alert_message">This message has been blocked because it contains high-risk grooming patterns. This incident will be logged for your safety.</string>
+    <string name="report_get_help">Report &amp; Get Help</string>
+    <string name="close">Close</string>
 </resources>

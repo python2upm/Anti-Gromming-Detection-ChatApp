@@ -28,11 +28,22 @@
         android:paddingEnd="@dimen/_12sdp"
         android:paddingBottom="@dimen/_8sdp"
         app:layout_constraintWidth_max="wrap"
-        android:textColor="@color/white"
+        android:textColor="@color/receive_message_text"
         android:textSize="@dimen/_13ssp"
         app:layout_constraintStart_toEndOf="@+id/imageProfile"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.75"/>
+
+    <ImageView
+        android:id="@+id/imageWarning"
+        android:layout_width="@dimen/_16sdp"
+        android:layout_height="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:src="@drawable/ic_warning"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/textMessage"
+        app:layout_constraintStart_toEndOf="@id/textMessage"
+        app:layout_constraintTop_toTopOf="@id/textMessage" />
 
     <TextView
         android:id="@+id/textDateTime"
