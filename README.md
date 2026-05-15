@@ -1,6 +1,6 @@
 ## Anti-Gromming-Detection-ChatApp
 
-A grooming-aware Android chat application built for female online safety. SafeChat embeds real-time AI-assisted grooming risk detection directly within a native messaging environment — protecting users at the point where risk actually occurs: inside the conversation itself.
+A grooming-aware Android chat application built for female online safety. SafeChat embeds real-time AI-assisted grooming risk detection directly within a native messaging environment, protecting users at the point where risk actually occurs: inside the conversation itself.
 
 ## Features
 
@@ -16,10 +16,12 @@ Every outgoing message is silently screened by a weighted keyword scoring engine
 
 2. Safety Hub (AI Assistant)
 
-A dedicated screen powered by the **Google Gemini API**. Users can ask the AI assistant about grooming warning signs, seek safety guidance, or get help preparing a report — all without leaving the app. Three modes are available:
-- Q&A — general grooming awareness questions
-- Policy Analysis — understanding relevant laws and policies
-- Report Assistant — guided help drafting a formal report
+A dedicated screen powered by the **Google Gemini API**. Users can ask the AI assistant about grooming warning signs, seek safety guidance, or get help preparing a report, all without leaving the app. 
+
+Three modes are available:
+- Q&A(general grooming awareness questions)
+- Policy Analysis(understanding relevant laws and policies)
+- Report Assistant(guided help drafting a formal report)
 
 3. Risk Dashboard
 
@@ -40,8 +42,6 @@ A per-contact risk dashboard aggregates token scores across an entire conversati
 | AI / LLM | Google Gemini API (`gemini-flash-latest`) |
 | HTTP Client | Retrofit 2 |
 | Markdown Rendering | Markwon |
-| Min SDK | Android 7.0 (API 24) |
-| Target SDK | Android 16 (API 36) |
 
 ## Project Structure
 
@@ -74,7 +74,7 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
 
 4. Build and run
-- Open the project in Android Studio
+- Open the project in Android Studio. Require android 7.0 or above
 
 ## References
 
