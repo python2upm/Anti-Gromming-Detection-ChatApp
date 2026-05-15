@@ -15,18 +15,22 @@ Every outgoing message is silently screened by a weighted keyword scoring engine
 | Blocked | 50+ | Message blocked from sending |
 
 2. Safety Hub (AI Assistant)
+
 A dedicated screen powered by the **Google Gemini API**. Users can ask the AI assistant about grooming warning signs, seek safety guidance, or get help preparing a report — all without leaving the app. Three modes are available:
 - **Q&A** — general grooming awareness questions
 - **Policy Analysis** — understanding relevant laws and policies
 - **Report Assistant** — guided help drafting a formal report
 
 3. Risk Dashboard
+
 A per-contact risk dashboard aggregates token scores across an entire conversation history, giving users a longitudinal view of whether a contact's communication pattern reflects escalating grooming behaviour over time.
 
 4. Report Flow
+
 Users can flag a conversation directly from the chat screen. The conversation evidence is forwarded to the Gemini API for AI-assisted analysis, and a summary is presented to the user before formal submission.
 
 5. Authentication
+
 Sign up and sign in via email and password, with user profiles and profile images stored in Firebase Firestore.
 
 ## Tech Stack
@@ -50,26 +54,22 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 ## Setup & Installation
 
-1. Prerequisites
-- Android Studio (latest stable)
-- Android device or emulator running API 24+
-- A Firebase project
-- A Google Gemini API key
-
-### Steps
-
-**1. Clone the repository**
+1. Clone the repository
 ```bash
 git clone https://github.com/your-username/Anti-Gromming-Detection-ChatApp.git
 cd Anti-Gromming-Detection-ChatApp
 ```
 
-**2. Connect Firebase**
+2. Connect Firebase
 - Create a project at [Firebase Console](https://console.firebase.google.com/)
 - Enable **Firestore Database** and **Cloud Messaging**
 - Download `google-services.json` and place it in `app/`
+- Navigate to Project Settings.
+- Select the Service Account tab.
+- Click on Generate New Private Key to download the service_account.json file.
+- Place service_account.json it inside your app’s app/src/main/assets directory in Android Studio.
 
-**3. Add your Gemini API key**
+3. Add your Gemini API key
 
 Open `app/src/main/java/com/example/chatapp/utilities/Constants.java` and replace:
 ```java
@@ -77,7 +77,7 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
 Get a key at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-**4. Build and run**
+4. Build and run
 
 Open the project in Android Studio and click **Run**, or build an APK via:
 ```
