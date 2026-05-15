@@ -17,9 +17,9 @@ Every outgoing message is silently screened by a weighted keyword scoring engine
 2. Safety Hub (AI Assistant)
 
 A dedicated screen powered by the **Google Gemini API**. Users can ask the AI assistant about grooming warning signs, seek safety guidance, or get help preparing a report — all without leaving the app. Three modes are available:
-- **Q&A** — general grooming awareness questions
-- **Policy Analysis** — understanding relevant laws and policies
-- **Report Assistant** — guided help drafting a formal report
+- Q&A — general grooming awareness questions
+- Policy Analysis — understanding relevant laws and policies
+- Report Assistant — guided help drafting a formal report
 
 3. Risk Dashboard
 
@@ -49,8 +49,11 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 ## Project Structure
 
-![alt text](diagram1.png)
-![alt text](diagram2.png)
+
+<p>
+    <img src="diagram1.png" >
+    <img src="diagram2.png" >
+</p>
 
 ## Setup & Installation
 
