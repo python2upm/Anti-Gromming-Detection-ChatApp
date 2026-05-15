@@ -47,7 +47,7 @@ A per-contact risk dashboard aggregates token scores across an entire conversati
 
 <p>
     <img width="350" height="400" src="diagram1.png" hspace="5" >
-    <img width="350" height="500" src="diagram2.png" hspace="5" >
+    <img width="550" height="500" src="diagram2.png" hspace="5" >
 </p>
 
 ## Setup & Installation
