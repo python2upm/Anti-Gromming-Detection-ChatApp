@@ -1,40 +1,33 @@
-# SafeChat 🛡️
-### *"An AI That Reads Between The Lines"*
+## Anti-Gromming-Detection-ChatApp
 
 A grooming-aware Android chat application built for female online safety. SafeChat embeds real-time AI-assisted grooming risk detection directly within a native messaging environment — protecting users at the point where risk actually occurs: inside the conversation itself.
 
-> **Course:** CCS 3600 — Artificial Intelligence | Universiti Putra Malaysia
-> **Group:** LAW STUDENTS
-
----
-
 ## Features
 
-### 💬 Real-Time Chat with Grooming Detection
+1. Real-Time Chat with Grooming Detection
+
 Every outgoing message is silently screened by a weighted keyword scoring engine before it is delivered. Messages are classified into three levels:
 
 | Level | Token Score | Action |
 |-------|-------------|--------|
-| ✅ Safe | Below 20 | Message sent normally |
-| ⚠️ Warning | 20 – 49 | Alert shown; user may proceed |
-| 🚫 Blocked | 50+ | Message blocked from sending |
+| Safe | Below 20 | Message sent normally |
+| Warning | 20 – 49 | Alert shown; user may proceed |
+| Blocked | 50+ | Message blocked from sending |
 
-### 🤖 Safety Hub (AI Assistant)
+2. Safety Hub (AI Assistant)
 A dedicated screen powered by the **Google Gemini API**. Users can ask the AI assistant about grooming warning signs, seek safety guidance, or get help preparing a report — all without leaving the app. Three modes are available:
 - **Q&A** — general grooming awareness questions
 - **Policy Analysis** — understanding relevant laws and policies
 - **Report Assistant** — guided help drafting a formal report
 
-### 📊 Risk Dashboard
+3. Risk Dashboard
 A per-contact risk dashboard aggregates token scores across an entire conversation history, giving users a longitudinal view of whether a contact's communication pattern reflects escalating grooming behaviour over time.
 
-### 📋 Report Flow
+4. Report Flow
 Users can flag a conversation directly from the chat screen. The conversation evidence is forwarded to the Gemini API for AI-assisted analysis, and a summary is presented to the user before formal submission.
 
-### 🔐 Authentication
+5. Authentication
 Sign up and sign in via email and password, with user profiles and profile images stored in Firebase Firestore.
-
----
 
 ## Tech Stack
 
@@ -50,8 +43,6 @@ Sign up and sign in via email and password, with user profiles and profile image
 | Min SDK | Android 7.0 (API 24) |
 | Target SDK | Android 16 (API 36) |
 
----
-
 ## Project Structure
 
 ![alt text](diagram1.png)
@@ -59,7 +50,7 @@ Sign up and sign in via email and password, with user profiles and profile image
 
 ## Setup & Installation
 
-### Prerequisites
+1. Prerequisites
 - Android Studio (latest stable)
 - Android device or emulator running API 24+
 - A Firebase project
@@ -86,8 +77,6 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
 Get a key at [Google AI Studio](https://aistudio.google.com/app/apikey).
 
-> ⚠️ **Security note:** Never commit a real API key to a public repository. Use `local.properties` or Android `BuildConfig` fields with `gitignore` in production.
-
 **4. Build and run**
 
 Open the project in Android Studio and click **Run**, or build an APK via:
@@ -95,45 +84,12 @@ Open the project in Android Studio and click **Run**, or build an APK via:
 Build → Build Bundle(s) / APK(s) → Build APK(s)
 ```
 
----
-
-## How the Grooming Detection Works
-
-The `GroomingDetector` class implements a weighted keyword lexicon. Each term carries a predefined token weight based on its severity as a grooming indicator, informed by criminological research and validated against the PAN 2012 Sexual Predator Identification Dataset.
-
-**Example weights:**
-```
-"nude"              → 50 tokens   (High severity)
-"meet alone"        → 40 tokens   (High severity)
-"private photo"     → 40 tokens   (High severity)
-"our secret"        → 30 tokens   (Medium-high)
-"don't tell"        → 30 tokens   (Medium-high)
-"webcam"            → 20 tokens   (Medium)
-"sweetie"           → 10 tokens   (Low-medium)
-```
-
-Token scores accumulate per message. A single message scoring ≥ 50 is blocked entirely.
-
----
-
 ## Known Limitations
 
 - Keyword-based detection can be circumvented by deliberate misspellings or coded language
 - The system does not perform contextual disambiguation — legitimate uses of flagged terms may trigger warnings
 - The Gemini Safety Hub operates on user-initiated queries only, not passive monitoring
 - Currently English-language only; multilingual support is a planned future enhancement
-
----
-
-## Future Work
-
-- Supervised ML classifier layer to reduce false positives
-- Contextual NLP model to disambiguate keyword matches
-- Multilingual keyword lexicons
-- Integration with formal reporting authorities or NGO support pipelines
-- Appeal mechanism for contested blocked messages
-
----
 
 ## Research References
 
