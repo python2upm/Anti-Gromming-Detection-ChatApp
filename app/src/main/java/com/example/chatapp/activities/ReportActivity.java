@@ -27,7 +27,7 @@ public class ReportActivity extends BaseActivity {
     }
 
     private void setListeners() {
-        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.buttonSubmitReport.setOnClickListener(v -> {
             showToast("Report submitted successfully. Thank you for keeping the community safe.");
             finish();

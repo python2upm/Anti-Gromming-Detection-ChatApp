@@ -110,25 +110,25 @@ public class ChatActivity extends BaseActivity {
 
     private void showMediumRiskWarning(GroomingDetector.DetectionResult result) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Safety Warning")
-                .setMessage("This message contains language that could be associated with grooming behavior. Are you sure you want to send it?\n\nDetected: " + result.reason)
-                .setPositiveButton("Send Anyway", (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name()))
-                .setNegativeButton("Cancel", null)
+                .setTitle(R.string.safety_warning)
+                .setMessage(getString(R.string.grooming_warning_message, result.reason))
+                .setPositiveButton(R.string.send_anyway, (dialog, which) -> performSendMessage(binding.inputMessage.getText().toString(), true, result.score, result.riskLevel.name()))
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
     private void showHighRiskAlert(GroomingDetector.DetectionResult result) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Security Alert")
-                .setMessage("This message has been blocked because it contains high-risk grooming patterns. This incident will be logged for your safety.")
-                .setPositiveButton("Report & Get Help", (dialog, which) -> {
+                .setTitle(R.string.security_alert)
+                .setMessage(R.string.high_risk_alert_message)
+                .setPositiveButton(R.string.report_get_help, (dialog, which) -> {
                     logHighRiskIncident(result);
                     android.content.Intent intent = new android.content.Intent(getApplicationContext(), ReportActivity.class);
                     intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
                     intent.putExtra(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
                     startActivity(intent);
                 })
-                .setNegativeButton("Close", (dialog, which) -> logHighRiskIncident(result))
+                .setNegativeButton(R.string.close, (dialog, which) -> logHighRiskIncident(result))
                 .show();
     }
 
@@ -338,8 +338,14 @@ public class ChatActivity extends BaseActivity {
 
     private void setListeners(){
 
-        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.layoutSend.setOnClickListener(v -> sendMessage());
+        binding.imageInfo.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(getApplicationContext(), RiskDashboardActivity.class);
+            intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+            intent.putExtra(Constants.KEY_NAME, receiverUser.name);
+            startActivity(intent);
+        });
     }
 
     private String getReadableDateTime(Date date){

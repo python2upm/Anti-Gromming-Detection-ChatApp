@@ -22,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Safety Report"
+        android:text="@string/safety_report"
         android:textColor="@color/white"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold"
@@ -55,7 +55,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Why was this flagged?"
+                android:text="@string/why_flagged"
                 android:textColor="@color/primary_text"
                 android:textSize="@dimen/_16ssp"
                 android:textStyle="bold"/>
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
-                android:text="Your Message"
+                android:text="@string/your_message"
                 android:textColor="@color/primary_text"
                 android:textSize="@dimen/_14ssp"
                 android:textStyle="bold"/>
@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_50sdp"
                 android:layout_marginTop="@dimen/_30sdp"
-                android:text="Submit Official Report"
+                android:text="@string/submit_report"
                 app:cornerRadius="@dimen/_8sdp"/>
 
             <TextView
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:gravity="center"
-                android:text="View Safety Resources"
+                android:text="@string/view_resources"
                 android:textColor="@color/primary"
                 android:textSize="@dimen/_12ssp"
                 android:textStyle="bold"/>

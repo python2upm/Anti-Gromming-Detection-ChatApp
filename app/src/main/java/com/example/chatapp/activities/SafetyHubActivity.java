@@ -33,7 +33,7 @@ public class SafetyHubActivity extends BaseActivity {
     }
 
     private void setListeners() {
-        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.imageSend.setOnClickListener(v -> {
             if (!binding.inputPrompt.getText().toString().trim().isEmpty()) {
                 callGeminiAPI(binding.inputPrompt.getText().toString());
