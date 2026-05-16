@@ -4,7 +4,7 @@ A grooming-aware Android chat application built for female online safety. SafeCh
 
 ## Demo
 
-[![Download](https://img.shields.io/badge/Download-v1.0.0-blue?style=flat-square)](https://github.com/zilitye/Anti-Gromming-Detection-ChatApp/releases/download/v1.0.0/app-release.apk)
+[![Download](https://img.shields.io/badge/Download-v1.0.0-blue?style=flat-square)](https://github.com/zilitye/Anti-Gromming-Detection-ChatApp/releases/download/v1.0.1/app-release.apk)
 
 Install and run `app-release.apk`. Requires Android 7.0 or higher
 
