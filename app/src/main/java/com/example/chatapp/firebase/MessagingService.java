@@ -27,6 +27,20 @@ public class MessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token){
         super.onNewToken(token);
+        updateToken(token);
+    }
+
+    private void updateToken(String token) {
+        com.example.chatapp.utilities.PreferenceManager preferenceManager =
+                new com.example.chatapp.utilities.PreferenceManager(getApplicationContext());
+        String userId = preferenceManager.getString(Constants.KEY_USER_ID);
+        if (userId != null && !userId.isEmpty()) {
+            com.google.firebase.firestore.FirebaseFirestore database =
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance();
+            database.collection(Constants.KEY_COLLECTION_USERS)
+                    .document(userId)
+                    .update(Constants.KEY_FCM_TOKEN, token);
+        }
     }
 
     @Override
@@ -71,8 +85,10 @@ public class MessagingService extends FirebaseMessagingService {
         }
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
         }
         notificationManagerCompat.notify(notificationId, builder.build());
     }

@@ -21,6 +21,7 @@ import com.example.chatapp.models.ChatMessage;
 import com.example.chatapp.models.User;
 import com.example.chatapp.network.ApiClient;
 import com.example.chatapp.network.ApiService;
+import com.example.chatapp.utilities.AccessTokenManager;
 import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.GroomingDetector;
 import com.example.chatapp.utilities.PreferenceManager;
@@ -175,23 +176,29 @@ public class ChatActivity extends BaseActivity {
         }
         if (!isReceiverAvailable) {
             try {
-                JSONArray tokens = new JSONArray();
-                tokens.put(receiverUser.token);
+                if (receiverUser.token == null || receiverUser.token.trim().isEmpty()) {
+                    showToast("Receiver token is missing. Notification not sent.");
+                } else {
+                    JSONObject data = new JSONObject();
+                    data.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+                    data.put(Constants.KEY_NAME, preferenceManager.getString(Constants.KEY_NAME));
+                    data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+                    data.put(Constants.KEY_MESSAGE, messageText);
 
-                JSONObject data = new JSONObject();
-                data.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
-                data.put(Constants.KEY_NAME, preferenceManager.getString(Constants.KEY_NAME));
-                data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getString(Constants.KEY_FCM_TOKEN));
-                data.put(Constants.KEY_MESSAGE, messageText);
+                    JSONObject notification = new JSONObject();
+                    notification.put("title", preferenceManager.getString(Constants.KEY_NAME));
+                    notification.put("body", messageText);
 
-                JSONObject notificationMessage = new JSONObject();
-                notificationMessage.put(Constants.REMOTE_MSG_DATA, data);
-                notificationMessage.put(Constants.REMOTE_MSG_TOKEN, receiverUser.token);
+                    JSONObject notificationMessage = new JSONObject();
+                    notificationMessage.put(Constants.REMOTE_MSG_DATA, data);
+                    notificationMessage.put("notification", notification);
+                    notificationMessage.put(Constants.REMOTE_MSG_TOKEN, receiverUser.token);
 
-                JSONObject body = new JSONObject();
-                body.put(Constants.REMOTE_MSG_MESSAGE, notificationMessage);
+                    JSONObject body = new JSONObject();
+                    body.put(Constants.REMOTE_MSG_MESSAGE, notificationMessage);
 
-                sendNotification(body.toString());
+                    sendNotification(body.toString());
+                }
             } catch (Exception exception) {
                 showToast(exception.getMessage());
             }
@@ -209,51 +216,107 @@ public class ChatActivity extends BaseActivity {
 // with this version. Everything else in the file stays the same.
 // -----------------------------------------------------------------------
 
+    private String getFCMErrorHint(String responseBody) {
+        try {
+            JSONObject json = new JSONObject(responseBody);
+            if (json.has("error")) {
+                JSONObject error = json.getJSONObject("error");
+                String status = error.optString("status");
+
+                // Try to get specific FCM error code from details
+                String errorCode = "";
+                if (error.has("details")) {
+                    JSONArray details = error.getJSONArray("details");
+                    for (int i = 0; i < details.length(); i++) {
+                        JSONObject detail = details.getJSONObject(i);
+                        if (detail.has("errorCode")) {
+                            errorCode = detail.getString("errorCode");
+                            break;
+                        }
+                    }
+                }
+
+                if ("UNREGISTERED".equals(errorCode)) {
+                    return "The recipient has uninstalled the app or their session expired.";
+                } else if ("INVALID_ARGUMENT".equals(status) || "INVALID_ARGUMENT".equals(errorCode)) {
+                    return "The notification format is invalid. Please contact support.";
+                } else if ("SENDER_ID_MISMATCH".equals(errorCode)) {
+                    return "The app's configuration doesn't match the server. Please update the app.";
+                } else if ("QUOTA_EXCEEDED".equals(errorCode)) {
+                    return "Too many notifications sent. Please wait a moment.";
+                } else if ("UNAVAILABLE".equals(status)) {
+                    return "Notification server is temporarily busy. Try again later.";
+                }
+
+                return error.optString("message", "Unknown notification error");
+            }
+        } catch (Exception e) {
+            return "Failed to send notification (Technical error: " + responseBody + ")";
+        }
+        return "Unknown error occurred";
+    }
+
     private void sendNotification(String messageBody) {
-        Constants.getRemoteMsgHeaders(getApplicationContext(), new Constants.HeadersCallback() {
+        AccessTokenManager.getInstance(getApplicationContext()).getProjectId(new AccessTokenManager.TokenCallback() {
             @Override
-            public void onHeaders(HashMap<String, String> headers) {
-                // getRemoteMsgHeaders runs on a background thread, so hop back
-                // to the main thread before touching Retrofit / UI.
-                runOnUiThread(() ->
-                        ApiClient.getClient().create(ApiService.class)
-                                .sendMessage(headers, messageBody)
-                                .enqueue(new Callback<String>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<String> call,
-                                                           @NonNull Response<String> response) {
-                                        if (response.isSuccessful()) {
-                                            try {
-                                                if (response.body() != null) {
-                                                    JSONObject responseJson = new JSONObject(response.body());
-                                                    if (responseJson.has("name")) {
-                                                        showToast("Notification sent successfully");
-                                                    } else if (responseJson.has("error")) {
-                                                        showToast("Error: " + responseJson
-                                                                .getJSONObject("error")
-                                                                .getString("message"));
+            public void onToken(String projectId) {
+                Constants.getRemoteMsgHeaders(getApplicationContext(), new Constants.HeadersCallback() {
+                    @Override
+                    public void onHeaders(HashMap<String, String> headers) {
+                        // getRemoteMsgHeaders runs on a background thread, so hop back
+                        // to the main thread before touching Retrofit / UI.
+                        runOnUiThread(() ->
+                                ApiClient.getClient().create(ApiService.class)
+                                        .sendMessage(projectId, headers, messageBody)
+                                        .enqueue(new Callback<String>() {
+                                            @Override
+                                            public void onResponse(@NonNull Call<String> call,
+                                                                   @NonNull Response<String> response) {
+                                                if (response.isSuccessful()) {
+                                                    try {
+                                                        if (response.body() != null) {
+                                                            JSONObject responseJson = new JSONObject(response.body());
+                                                            if (responseJson.has("name")) {
+                                                                showToast("Notification sent successfully");
+                                                            } else if (responseJson.has("error")) {
+                                                                showToast("Error: " + responseJson
+                                                                        .getJSONObject("error")
+                                                                        .getString("message"));
+                                                            }
+                                                        }
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                } else {
+                                                    try {
+                                                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "";
+                                                        String hint = getFCMErrorHint(errorBody);
+                                                        showToast("Notification failed: " + hint);
+                                                    } catch (java.io.IOException e) {
+                                                        showToast("Error " + response.code());
                                                     }
                                                 }
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
                                             }
-                                        } else {
-                                            showToast("Error " + response.code());
-                                        }
-                                    }
 
-                                    @Override
-                                    public void onFailure(@NonNull Call<String> call,
-                                                          @NonNull Throwable t) {
-                                        showToast(t.getMessage());
-                                    }
-                                })
-                );
+                                            @Override
+                                            public void onFailure(@NonNull Call<String> call,
+                                                                  @NonNull Throwable t) {
+                                                showToast(t.getMessage());
+                                            }
+                                        })
+                        );
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> showToast("Header error: " + e.getMessage()));
+                    }
+                });
             }
 
             @Override
             public void onError(Exception e) {
-                runOnUiThread(() -> showToast("Token error: " + e.getMessage()));
+                runOnUiThread(() -> showToast("Project ID error: " + e.getMessage()));
             }
         });
     }

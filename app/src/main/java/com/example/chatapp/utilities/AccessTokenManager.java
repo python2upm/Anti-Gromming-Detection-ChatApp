@@ -61,6 +61,7 @@ public class AccessTokenManager {
     // Service account fields (loaded once from JSON)
     private String clientEmail;
     private String privateKeyPem;
+    private String projectId;
     private boolean credentialsLoaded = false;
 
     private AccessTokenManager(Context context) {
@@ -108,6 +109,19 @@ public class AccessTokenManager {
         });
     }
 
+    public void getProjectId(TokenCallback callback) {
+        executor.execute(() -> {
+            try {
+                if (!credentialsLoaded) {
+                    loadCredentials();
+                }
+                callback.onToken(projectId);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     // -------------------------------------------------------------------------
     // Credentials loading
     // -------------------------------------------------------------------------
@@ -123,6 +137,7 @@ public class AccessTokenManager {
         JSONObject json = new JSONObject(sb.toString());
         clientEmail = json.getString("client_email");
         privateKeyPem = json.getString("private_key");
+        projectId = json.getString("project_id");
         credentialsLoaded = true;
     }
 
