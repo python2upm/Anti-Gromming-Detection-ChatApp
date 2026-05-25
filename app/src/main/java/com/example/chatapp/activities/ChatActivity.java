@@ -98,6 +98,9 @@ public class ChatActivity extends BaseActivity {
 
     private void sendMessage() {
         String messageText = binding.inputMessage.getText().toString();
+        if (messageText.trim().isEmpty()) {
+            return;
+        }
         GroomingDetector.DetectionResult result = GroomingDetector.analyze(messageText);
 
         if (result.riskLevel == GroomingDetector.RiskLevel.HIGH) {
@@ -367,10 +370,20 @@ public class ChatActivity extends BaseActivity {
             return;
         }
         if(value != null){
-            int count = chatMessages.size();
             for (DocumentChange documentChange : value.getDocumentChanges()){
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
+                    String messageId = documentChange.getDocument().getId();
+                    boolean isAlreadyAdded = false;
+                    for (ChatMessage message : chatMessages) {
+                        if (message.id != null && message.id.equals(messageId)) {
+                            isAlreadyAdded = true;
+                            break;
+                        }
+                    }
+                    if (isAlreadyAdded) continue;
+
                     ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.id = messageId;
                     chatMessage.senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     chatMessage.receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
                     chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
@@ -384,10 +397,8 @@ public class ChatActivity extends BaseActivity {
 
             }
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
-            if (count == 0){
-                chatAdapter.notifyDataSetChanged();
-            }else{
-                chatAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
+            chatAdapter.notifyDataSetChanged();
+            if (!chatMessages.isEmpty()) {
                 binding.chatRecyclerView.smoothScrollToPosition(chatMessages.size() - 1);
             }
             binding.chatRecyclerView.setVisibility(View.VISIBLE);

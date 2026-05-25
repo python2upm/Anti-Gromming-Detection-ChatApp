@@ -127,10 +127,22 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
                     String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
+                    String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+                    String partnerId = currentUserId.equals(senderId) ? receiverId : senderId;
+
+                    boolean isAlreadyAdded = false;
+                    for (ChatMessage conversation : conversations) {
+                        if (conversation.conversionId != null && conversation.conversionId.equals(partnerId)) {
+                            isAlreadyAdded = true;
+                            break;
+                        }
+                    }
+                    if (isAlreadyAdded) continue;
+
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.senderId = senderId;
                     chatMessage.receiverId = receiverId;
-                    if(preferenceManager.getString(Constants.KEY_USER_ID).equals(senderId)){
+                    if(currentUserId.equals(senderId)){
                         chatMessage.conversionImage = documentChange.getDocument().getString(Constants.KEY_RECEIVER_IMAGE);
                         chatMessage.conversionName = documentChange.getDocument().getString(Constants.KEY_RECEIVER_NAME);
                         chatMessage.conversionId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
@@ -143,10 +155,13 @@ public class MainActivity extends BaseActivity implements ConversionListener {
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                     conversations.add(chatMessage);
                 }else if(documentChange.getType() == DocumentChange.Type.MODIFIED){
+                    String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
+                    String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
+                    String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+                    String partnerId = currentUserId.equals(senderId) ? receiverId : senderId;
+
                     for(int i=0; i<conversations.size(); i++){
-                        String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
-                        String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                        if(conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverId)){
+                        if(conversations.get(i).conversionId != null && conversations.get(i).conversionId.equals(partnerId)){
                             conversations.get(i).message = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
                             conversations.get(i).dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                             break;
