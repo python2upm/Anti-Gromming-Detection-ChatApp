@@ -136,9 +136,13 @@ public class SafetyHubActivity extends BaseActivity {
                 systemPrompt.put("role", "user");
                 JSONArray systemParts = new JSONArray();
                 JSONObject systemText = new JSONObject();
-                systemText.put("text", "System: You are a safety assistant for a chat app focusing on anti-grooming. Mode: " + mode + 
-                        ". Current Conversation Context for Reference: " + conversationContext + 
-                        "\nRespond to the user's latest message based on this context and history.");
+                systemText.put("text", "You are a compassionate, trained counsellor supporting survivors of online grooming and sexual harassment. " +
+                        "Always respond with empathy and avoid victim-blaming language. " +
+                        "Ask user to tap on Resources button provided in the ui. " +
+                        "Mode: " + mode + ". " +
+                        "Conversation context for reference: " + conversationContext + " " +
+                        "Respond to the user's latest message based on this context and history.");
+
                 systemParts.put(systemText);
                 systemPrompt.put("parts", systemParts);
                 contentsArray.put(systemPrompt);
