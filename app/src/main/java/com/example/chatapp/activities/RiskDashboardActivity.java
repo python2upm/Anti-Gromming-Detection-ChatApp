@@ -30,6 +30,7 @@ public class RiskDashboardActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityRiskDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyEdgeToEdge(binding.main);
         init();
         setListeners();
         fetchConversationAndAnalyze();

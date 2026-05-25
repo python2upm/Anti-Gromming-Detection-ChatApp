@@ -41,6 +41,7 @@ public class SafetyHubActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySafetyHubBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyEdgeToEdge(binding.main);
         conversationContext = getIntent().getStringExtra("conversation");
         if (conversationContext == null) conversationContext = "No context provided.";
         init();
