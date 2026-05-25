@@ -67,6 +67,7 @@ public class ChatActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyEdgeToEdge(binding.main);
         setListeners();
         loadReceiverDetails();
         init();

@@ -51,6 +51,7 @@ public class MainActivity extends BaseActivity implements ConversionListener {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyEdgeToEdge(binding.main);
         preferenceManager = new PreferenceManager(getApplicationContext());
         init();
         loadUserDetails();
