@@ -45,10 +45,10 @@ cd Anti-Gromming-Detection-ChatApp
 - Create a project at Firebase Console
 - Enable **Firestore Database** and **Cloud Messaging**
 - Download `google-services.json` and place it in `app/`
-- Navigate to Project Settings.
-- Select the Service Account tab.
-- Click on Generate New Private Key to download the `service_account.json` file.
-- Place `service_account.json` it inside your app’s `app/src/main/assets` directory in Android Studio.
+- Navigate to Project Settings
+- Select the Service Account tab
+- Click on Generate New Private Key to download the `service_account.json` file
+- Place `service_account.json` it inside your app’s `app/src/main/assets` directory in Android Studio
 
 3. Add your Gemini API key
 - Open `app/src/main/java/com/example/chatapp/utilities/Constants.java` and replace:
@@ -57,5 +57,5 @@ public static final String GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 ```
 
 4. Build and run
-- Open the project in Android Studio.
+- Open the project in Android Studio
 
