@@ -12,6 +12,7 @@
     <color name="receive_message_text">#1D1D1F</color>
     <color name="sent_message_background">#007AFF</color>
     <color name="sent_message_text">#FFFFFF</color>
+    <color name="card_background">#FFFFFF</color>
     <color name="macos_accent">#007AFF</color>
     <color name="macos_traffic_red">#FF5F57</color>
     <color name="macos_traffic_yellow">#FEBC2E</color>

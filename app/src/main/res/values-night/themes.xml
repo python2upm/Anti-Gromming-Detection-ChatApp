@@ -4,6 +4,8 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="android:statusBarColor">@color/primary</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:colorBackground">@color/primary</item>
+        <item name="colorSurface">@color/card_background</item>
     </style>
 
 </resources>

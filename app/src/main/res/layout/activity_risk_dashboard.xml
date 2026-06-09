@@ -71,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/_16sdp"
                 app:strokeColor="@color/secondary_text"
                 app:strokeWidth="1dp">
@@ -142,6 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_16sdp"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="@dimen/_16sdp"
                 app:strokeColor="@color/secondary_text"
                 app:strokeWidth="1dp">
@@ -184,10 +186,12 @@
                     android:layout_height="@dimen/_50sdp"
                     android:text="@string/open_safety_hub"
                     android:textAllCaps="false"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_14ssp"
                     app:cornerRadius="@dimen/_12sdp"
                     app:backgroundTint="@color/macos_accent"
                     app:icon="@drawable/ic_info"
+                    app:iconTint="@color/white"
                     app:iconGravity="textStart"/>
 
                 <com.google.android.material.button.MaterialButton
