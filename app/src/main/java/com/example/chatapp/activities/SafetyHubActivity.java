@@ -2,13 +2,14 @@ package com.example.chatapp.activities;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.chatapp.R;
 import com.example.chatapp.adapters.SafetyHubAdapter;
 import com.example.chatapp.databinding.ActivitySafetyHubBinding;
 import com.example.chatapp.models.SafetyHubMessage;
 import com.example.chatapp.utilities.Constants;
+import com.example.chatapp.utilities.ErrorUtils;
+import com.example.chatapp.utilities.HttpException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -184,17 +185,15 @@ public class SafetyHubActivity extends BaseActivity {
                         binding.imageSend.setEnabled(true);
                     });
                 } else {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
-                    StringBuilder errorResponse = new StringBuilder();
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        errorResponse.append(line.trim());
-                    }
-                    throw new Exception("API failed (" + responseCode + "): " + errorResponse.toString());
+                    throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), "Safety Hub API failed");
                 }
             } catch (Exception e) {
                 runOnUiThread(() -> {
-                    showToast("Error: " + e.getMessage());
+                    if (e instanceof HttpException) {
+                        showToast(e.toString());
+                    } else {
+                        showToast("Connection failed");
+                    }
                     binding.progressBar.setVisibility(View.GONE);
                     binding.imageSend.setEnabled(true);
                 });
@@ -202,7 +201,5 @@ public class SafetyHubActivity extends BaseActivity {
         });
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
+    // Removed local showToast to use BaseActivity's version
 }

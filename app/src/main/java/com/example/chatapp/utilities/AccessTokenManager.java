@@ -209,7 +209,7 @@ public class AccessTokenManager {
         reader.close();
 
         if (responseCode != 200) {
-            throw new IOException("Token exchange failed (" + responseCode + "): " + sb);
+            throw new HttpException(responseCode, ErrorUtils.getStatusName(responseCode), sb.toString());
         }
 
         JSONObject responseJson = new JSONObject(sb.toString());

@@ -9,11 +9,9 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.chatapp.R;
 import com.example.chatapp.databinding.ActivitySignInBinding;
@@ -27,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity {
 
     private ActivitySignUpBinding binding;
     private PreferenceManager preferenceManager;
@@ -54,10 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             pickImage.launch(intent);
         });
-    }
-
-    private void showToast(String message){
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void signUp(){

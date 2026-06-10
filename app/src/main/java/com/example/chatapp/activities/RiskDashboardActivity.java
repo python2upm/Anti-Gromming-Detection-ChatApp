@@ -3,7 +3,6 @@ package com.example.chatapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -120,9 +119,5 @@ public class RiskDashboardActivity extends BaseActivity {
         if (flaggedCount > 0) {
             binding.textSummary.append("\n\nDetected patterns: " + detectedWords);
         }
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

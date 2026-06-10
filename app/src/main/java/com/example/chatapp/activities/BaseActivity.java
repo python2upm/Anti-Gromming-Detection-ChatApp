@@ -14,16 +14,24 @@ import com.example.chatapp.utilities.Constants;
 import com.example.chatapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.widget.Toast;
 
 public class BaseActivity extends AppCompatActivity {
     private DocumentReference documentReference;
+
+    protected void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-        documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
-                .document(preferenceManager.getString(Constants.KEY_USER_ID));
+        String userId = preferenceManager.getString(Constants.KEY_USER_ID);
+        if (userId != null) {
+            FirebaseFirestore database = FirebaseFirestore.getInstance();
+            documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
+                    .document(userId);
+        }
     }
 
     protected void applyEdgeToEdge(View rootView) {
@@ -39,13 +47,17 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        documentReference.update(Constants.KEY_AVAILABILITY, 0);
+        if (documentReference != null) {
+            documentReference.update(Constants.KEY_AVAILABILITY, 0);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        documentReference.update(Constants.KEY_AVAILABILITY, 1);
+        if (documentReference != null) {
+            documentReference.update(Constants.KEY_AVAILABILITY, 1);
+        }
     }
 
 

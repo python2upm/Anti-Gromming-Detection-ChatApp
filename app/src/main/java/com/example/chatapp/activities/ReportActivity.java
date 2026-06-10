@@ -1,7 +1,6 @@
 package com.example.chatapp.activities;
 
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.example.chatapp.databinding.ActivityReportBinding;
 import com.example.chatapp.utilities.Constants;
@@ -36,9 +35,5 @@ public class ReportActivity extends BaseActivity {
             // TODO: Navigate to SafetyHub or external URL
             showToast("Opening Safety Resources...");
         });
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -23,8 +23,11 @@ import com.example.chatapp.network.ApiClient;
 import com.example.chatapp.network.ApiService;
 import com.example.chatapp.utilities.AccessTokenManager;
 import com.example.chatapp.utilities.Constants;
+import com.example.chatapp.utilities.ErrorUtils;
 import com.example.chatapp.utilities.GroomingDetector;
+import com.example.chatapp.utilities.HttpException;
 import com.example.chatapp.utilities.PreferenceManager;
+import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -210,10 +213,7 @@ public class ChatActivity extends BaseActivity {
         binding.inputMessage.setText(null);
     }
 
-    private void showToast(String message){
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-
-    }
+    // Removed local showToast to use BaseActivity's version
 
 // -----------------------------------------------------------------------
 // Replace the existing sendNotification() method in ChatActivity.java
@@ -283,29 +283,22 @@ public class ChatActivity extends BaseActivity {
                                                             if (responseJson.has("name")) {
                                                                 showToast("Notification sent successfully");
                                                             } else if (responseJson.has("error")) {
-                                                                showToast("Error: " + responseJson
-                                                                        .getJSONObject("error")
-                                                                        .getString("message"));
+                                                                showToast("Failed to send notification");
                                                             }
                                                         }
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
                                                 } else {
-                                                    try {
-                                                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "";
-                                                        String hint = getFCMErrorHint(errorBody);
-                                                        showToast("Notification failed: " + hint);
-                                                    } catch (java.io.IOException e) {
-                                                        showToast("Error " + response.code());
-                                                    }
+                                                    String cleanError = ErrorUtils.getCleanErrorMessage(response.code());
+                                                    showToast(cleanError);
                                                 }
                                             }
 
                                             @Override
                                             public void onFailure(@NonNull Call<String> call,
                                                                   @NonNull Throwable t) {
-                                                showToast(t.getMessage());
+                                                showToast("Network error occurred");
                                             }
                                         })
                         );
@@ -313,14 +306,20 @@ public class ChatActivity extends BaseActivity {
 
                     @Override
                     public void onError(Exception e) {
-                        runOnUiThread(() -> showToast("Header error: " + e.getMessage()));
+                        runOnUiThread(() -> {
+                            if (e instanceof HttpException) {
+                                showToast(e.toString());
+                            } else {
+                                showToast("Connection failed");
+                            }
+                        });
                     }
                 });
             }
 
             @Override
             public void onError(Exception e) {
-                runOnUiThread(() -> showToast("Project ID error: " + e.getMessage()));
+                runOnUiThread(() -> showToast("Internal error occurred"));
             }
         });
     }
