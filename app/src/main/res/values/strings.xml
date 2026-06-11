@@ -21,7 +21,7 @@
     <string name="chat_with">Chat with %1$s</string>
     <string name="safety_report">Safety Report</string>
     <string name="why_flagged">Why was this flagged?</string>
-    <string name="your_message">Your Message</string>
+    <string name="your_message">Conversation Context</string>
     <string name="submit_report">Submit Official Report</string>
     <string name="view_resources">View Safety Resources</string>
     <string name="safety_hub">Safety Hub</string>

@@ -1,5 +1,6 @@
 package com.example.chatapp.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -126,14 +127,33 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void showHighRiskAlert(GroomingDetector.DetectionResult result) {
+        String blockedMessage = binding.inputMessage.getText().toString();
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle(R.string.security_alert)
                 .setMessage(R.string.high_risk_alert_message)
                 .setPositiveButton(R.string.report_get_help, (dialog, which) -> {
                     logHighRiskIncident(result);
-                    android.content.Intent intent = new android.content.Intent(getApplicationContext(), ReportActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+
+                    // Build Conversation Context - ONLY include sender's (current user) messages
+                    StringBuilder contextBuilder = new StringBuilder();
+                    String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+                    int totalScore = 0;
+
+                    for (ChatMessage chatMessage : chatMessages) {
+                        if (chatMessage.senderId.equals(currentUserId)) {
+                            contextBuilder.append(chatMessage.message).append("\n");
+                            GroomingDetector.DetectionResult historyResult = GroomingDetector.analyze(chatMessage.message);
+                            if (historyResult.riskLevel != GroomingDetector.RiskLevel.SAFE) {
+                                totalScore += historyResult.score;
+                            }
+                        }
+                    }
+
+                    intent.putExtra(Constants.KEY_USER_ID, receiverUser.id);
+                    intent.putExtra(Constants.KEY_RISK_SCORE, totalScore + result.score);
                     intent.putExtra(Constants.KEY_RISK_LEVEL, result.reason);
-                    intent.putExtra(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+                    intent.putExtra(Constants.KEY_MESSAGE, contextBuilder.toString() + "Blocked: " + blockedMessage);
                     startActivity(intent);
                 })
                 .setNegativeButton(R.string.close, (dialog, which) -> logHighRiskIncident(result))

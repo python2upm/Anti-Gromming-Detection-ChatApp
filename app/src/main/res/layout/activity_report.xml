@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
@@ -94,6 +95,7 @@
                 android:layout_height="@dimen/_50sdp"
                 android:layout_marginTop="@dimen/_30sdp"
                 android:text="@string/submit_report"
+                android:textColor="@color/white"
                 app:backgroundTint="@color/macos_accent"
                 app:cornerRadius="@dimen/_10sdp"/>
 

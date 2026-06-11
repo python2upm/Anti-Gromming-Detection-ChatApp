@@ -4,36 +4,69 @@ import android.os.Bundle;
 
 import com.example.chatapp.databinding.ActivityReportBinding;
 import com.example.chatapp.utilities.Constants;
+import com.example.chatapp.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Date;
+import java.util.HashMap;
 
 public class ReportActivity extends BaseActivity {
 
     private ActivityReportBinding binding;
+    private FirebaseFirestore database;
+    private PreferenceManager preferenceManager;
+    private String receiverId;
+    private int riskScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityReportBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyEdgeToEdge(binding.main);
+        init();
         setListeners();
         loadData();
     }
 
+    private void init() {
+        database = FirebaseFirestore.getInstance();
+        preferenceManager = new PreferenceManager(getApplicationContext());
+    }
+
     private void loadData() {
+        receiverId = getIntent().getStringExtra(Constants.KEY_USER_ID);
+        riskScore = getIntent().getIntExtra(Constants.KEY_RISK_SCORE, 0);
         String reason = getIntent().getStringExtra(Constants.KEY_RISK_LEVEL);
         String message = getIntent().getStringExtra(Constants.KEY_MESSAGE);
+        
         binding.textReason.setText(reason);
         binding.textMessage.setText(message);
     }
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        binding.buttonSubmitReport.setOnClickListener(v -> {
-            showToast("Report submitted successfully. Thank you for keeping the community safe.");
-            finish();
-        });
+        binding.buttonSubmitReport.setOnClickListener(v -> submitReport());
         binding.textSafetyResources.setOnClickListener(v -> {
-            // TODO: Navigate to SafetyHub or external URL
             showToast("Opening Safety Resources...");
         });
+    }
+
+    private void submitReport() {
+        HashMap<String, Object> incident = new HashMap<>();
+        incident.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+        incident.put(Constants.KEY_RECEIVER_ID, receiverId);
+        incident.put(Constants.KEY_MESSAGE, binding.textMessage.getText().toString());
+        incident.put(Constants.KEY_TIMESTAMP, new Date());
+        incident.put(Constants.KEY_IS_FLAGGED, true);
+        incident.put(Constants.KEY_RISK_SCORE, riskScore);
+        incident.put(Constants.KEY_RISK_LEVEL, riskScore >= 50 ? "HIGH" : (riskScore >= 20 ? "MEDIUM" : "SAFE"));
+        
+        database.collection("flagged_incidents").add(incident)
+                .addOnSuccessListener(documentReference -> {
+                    showToast("Report submitted successfully. Thank you for keeping the community safe.");
+                    finish();
+                })
+                .addOnFailureListener(e -> showToast("Failed to submit report. Please try again."));
     }
 }

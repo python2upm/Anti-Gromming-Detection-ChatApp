@@ -14,7 +14,6 @@ import com.example.chatapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.List;
 import java.util.Locale;
 
 public class RiskDashboardActivity extends BaseActivity {
@@ -23,6 +22,9 @@ public class RiskDashboardActivity extends BaseActivity {
     private FirebaseFirestore database;
     private PreferenceManager preferenceManager;
     private String receiverId;
+    private String conversationContext = "";
+    private int currentRiskScore = 0;
+    private String currentDetectedWords = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,6 @@ public class RiskDashboardActivity extends BaseActivity {
         binding.textReceiverName.setText(getString(R.string.chat_with, receiverName));
     }
 
-    private String conversationContext = "";
-
     private void setListeners() {
         binding.imageBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.buttonSafetyHub.setOnClickListener(v -> {
@@ -54,8 +54,10 @@ public class RiskDashboardActivity extends BaseActivity {
         });
         binding.buttonReport.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-            intent.putExtra(Constants.KEY_MESSAGE, "Dashboard requested report");
-            intent.putExtra(Constants.KEY_RISK_LEVEL, "User flagged from dashboard");
+            intent.putExtra(Constants.KEY_USER_ID, receiverId);
+            intent.putExtra(Constants.KEY_RISK_SCORE, currentRiskScore);
+            intent.putExtra(Constants.KEY_RISK_LEVEL, "Detected patterns: " + currentDetectedWords);
+            intent.putExtra(Constants.KEY_MESSAGE, conversationContext);
             startActivity(intent);
         });
     }
@@ -64,7 +66,8 @@ public class RiskDashboardActivity extends BaseActivity {
         binding.progressBar.setVisibility(View.VISIBLE);
         String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
 
-        // Fetch messages between these two users
+        // Fetch all messages sent by the receiver to the current user
+        // Reverted to simple query (no orderBy) to avoid Firestore Index issues
         database.collection(Constants.KEY_COLLECTION_CHAT)
                 .whereEqualTo(Constants.KEY_SENDER_ID, receiverId)
                 .whereEqualTo(Constants.KEY_RECEIVER_ID, currentUserId)
@@ -74,12 +77,12 @@ public class RiskDashboardActivity extends BaseActivity {
                         int totalScore = 0;
                         int flaggedCount = 0;
                         StringBuilder detectedWords = new StringBuilder();
-
                         StringBuilder contextBuilder = new StringBuilder();
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String message = document.getString(Constants.KEY_MESSAGE);
                             contextBuilder.append(message).append("\n");
+                            
                             GroomingDetector.DetectionResult result = GroomingDetector.analyze(message);
                             if (result.riskLevel != GroomingDetector.RiskLevel.SAFE) {
                                 totalScore += result.score;
@@ -88,7 +91,10 @@ public class RiskDashboardActivity extends BaseActivity {
                                 detectedWords.append(result.reason.replace("Suspicious patterns detected: ", "").replace("High risk patterns detected: ", ""));
                             }
                         }
+                        
                         conversationContext = contextBuilder.toString();
+                        currentRiskScore = totalScore;
+                        currentDetectedWords = detectedWords.toString();
                         updateUI(totalScore, flaggedCount, detectedWords.toString());
                     } else {
                         showToast("Failed to fetch messages for analysis.");
